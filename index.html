@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <title>ASL Formation Français Live</title>
 
   <style>
@@ -145,6 +144,24 @@
       line-height: 1.6;
     }
 
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 8px 13px;
+      border-radius: 999px;
+      background: #ffd166;
+      color: #111;
+      font-weight: 800;
+      font-size: 0.82rem;
+      margin: 4px 4px 4px 0;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: 1fr;
@@ -257,15 +274,27 @@
       color: #ffd166;
     }
 
-    .tag {
-      display: inline-block;
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: #ffd166;
-      color: #111;
-      font-weight: 800;
-      font-size: 0.82rem;
-      margin: 4px 4px 4px 0;
+    .notice {
+      color: #dce9ff;
+      line-height: 1.6;
+    }
+
+    .success-box {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(6,214,160,0.15);
+      border: 1px solid rgba(6,214,160,0.35);
+      color: #eafff8;
+    }
+
+    .warning-box {
+      margin-top: 14px;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,209,102,0.15);
+      border: 1px solid rgba(255,209,102,0.35);
+      color: #fff4cf;
     }
 
     footer {
@@ -275,9 +304,16 @@
       font-size: 0.9rem;
     }
 
-    .notice {
-      color: #dce9ff;
-      line-height: 1.6;
+    @media (max-width: 700px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .brand img {
+        width: 58px;
+        height: 58px;
+      }
     }
   </style>
 </head>
@@ -296,23 +332,25 @@
 
     <div class="mode-buttons">
       <button onclick="showSection('student')">👤 Élève</button>
-      <button class="btn-blue" onclick="showSection('teacher')">👩‍🏫 Professeure</button>
+      <button class="btn-blue" onclick="openTeacherLogin()">👩‍🏫 Professeure</button>
     </div>
   </header>
 
   <main>
     <section class="hero">
-      <h2>Apprendre le français autrement</h2>
-      <p>
+      <h2 id="heroTitle">Apprendre le français autrement</h2>
+      <p id="heroText">
         Une application moderne pour les cours de français de l’association ASL :
         exercices visuels, mini-examens, scores, progression et futur suivi en direct pour Stalina.
       </p>
-      <br>
-     <button class="tag" onclick="setLanguage('fr')">🇫🇷 Français</button>
-<button class="tag" onclick="setLanguage('en')">🇬🇧 English</button>
-<button class="tag" onclick="setLanguage('es')">🇪🇸 Español</button>
-<button class="tag" onclick="projectorMode()">🖥️ Mode projecteur</button>
-<button class="tag" onclick="showFirebaseInfo()">☁️ Préparation Firebase</button>
+
+      <div class="hero-actions">
+        <button class="tag" onclick="setLanguage('fr')">🇫🇷 Français</button>
+        <button class="tag" onclick="setLanguage('en')">🇬🇧 English</button>
+        <button class="tag" onclick="setLanguage('es')">🇪🇸 Español</button>
+        <button class="tag" onclick="projectorMode()">🖥️ Mode projecteur</button>
+        <button class="tag" onclick="showFirebaseInfo()">☁️ Préparation Firebase</button>
+      </div>
     </section>
 
     <section id="studentSection" class="grid">
@@ -321,6 +359,9 @@
 
         <label>Identifiant élève</label>
         <input id="studentId" type="text" placeholder="Exemple : ELEVE-001 ou ALBERTO-A">
+
+        <label>Code d’accès élève</label>
+        <input id="studentPassword" type="password" placeholder="Code donné par la professeure">
 
         <label>Langue d’aide</label>
         <select id="language">
@@ -345,6 +386,11 @@
         </select>
 
         <button onclick="startExam()">🚀 Commencer</button>
+
+        <div class="warning-box">
+          🔐 Code élève par défaut : <strong>ASL2026</strong><br>
+          La professeure pourra le modifier depuis son espace.
+        </div>
       </div>
 
       <div class="card">
@@ -358,6 +404,19 @@
         </p>
         <br>
         <button class="btn-dark" onclick="projectorMode()">🖥️ Mode projecteur</button>
+      </div>
+    </section>
+
+    <section id="teacherLoginSection" class="card hidden">
+      <h3>👩‍🏫 Accès professeure sécurisé</h3>
+
+      <label>Code professeure</label>
+      <input id="teacherPassword" type="password" placeholder="Code professeure">
+
+      <button class="btn-blue" onclick="checkTeacherAccess()">🔓 Entrer dans l’espace professeure</button>
+
+      <div class="warning-box">
+        Code professeure par défaut : <strong>STALINA-PROF</strong>
       </div>
     </section>
 
@@ -438,6 +497,19 @@
         </div>
       </div>
 
+      <div class="card" style="margin-bottom: 18px;">
+        <h3>🔐 Gestion du code élève</h3>
+        <p class="notice">Stalina peut changer le code d’accès élève quand elle le souhaite.</p>
+
+        <label>Nouveau code élève</label>
+        <input id="newStudentCode" type="text" placeholder="Exemple : ASL-SEMAINE-1">
+
+        <button class="btn-green" onclick="changeStudentCode()">💾 Enregistrer le nouveau code</button>
+        <button class="btn-dark" onclick="showCurrentStudentCode()">👁️ Voir le code actuel</button>
+
+        <div id="codeMessage" class="success-box hidden"></div>
+      </div>
+
       <p class="notice">
         Version actuelle : bilan local sur cet ordinateur.  
         Version suivante : connexion Firebase gratuite pour voir tous les élèves en temps réel.
@@ -460,37 +532,109 @@
       <br>
       <button class="btn-blue" onclick="loadResults()">🔄 Actualiser</button>
       <button class="btn-red" onclick="clearResults()">🗑️ Effacer résultats locaux</button>
+      <button class="btn-dark" onclick="logoutTeacher()">🚪 Quitter espace professeure</button>
     </section>
   </main>
 
   <footer>
-    ASL Formation Français Live — Projet CERVEAU CENTRAL | Version 1.2 locale
+    ASL Formation Français Live — Projet CERVEAU CENTRAL | Version 2.0 sécurisée locale
   </footer>
 
   <script>
+    const DEFAULT_STUDENT_CODE = "ASL2026";
+    const TEACHER_CODE = "STALINA-PROF";
+
     const translations = {
-      fr: "Travail progressif : vocabulaire, phrases simples, compréhension, prononciation et mini-examens.",
-      en: "Progressive learning: vocabulary, simple sentences, comprehension, pronunciation and mini-exams.",
-      es: "Aprendizaje progresivo: vocabulario, frases simples, comprensión, pronunciación y mini-exámenes."
+      fr: {
+        intro: "Travail progressif : vocabulaire, phrases simples, compréhension, prononciation et mini-examens.",
+        heroTitle: "Apprendre le français autrement",
+        heroText: "Une application moderne pour les cours de français de l’association ASL : exercices visuels, mini-examens, scores, progression et futur suivi en direct pour Stalina."
+      },
+      en: {
+        intro: "Progressive learning: vocabulary, simple sentences, comprehension, pronunciation and mini-exams.",
+        heroTitle: "Learn French differently",
+        heroText: "A modern application for ASL French courses: visual exercises, mini-exams, scores, progress tracking and future live monitoring for the teacher."
+      },
+      es: {
+        intro: "Aprendizaje progresivo: vocabulario, frases simples, comprensión, pronunciación y mini-exámenes.",
+        heroTitle: "Aprender francés de otra manera",
+        heroText: "Una aplicación moderna para los cursos de francés de ASL: ejercicios visuales, mini-exámenes, resultados, progresión y futuro seguimiento en directo para la profesora."
+      }
     };
 
+    function getStudentCode() {
+      return localStorage.getItem("aslStudentAccessCode") || DEFAULT_STUDENT_CODE;
+    }
+
     document.getElementById("language").addEventListener("change", function () {
-      document.getElementById("introText").innerText = translations[this.value];
+      setLanguage(this.value);
     });
 
-    function showSection(mode) {
-      document.getElementById("studentSection").classList.toggle("hidden", mode !== "student");
-      document.getElementById("teacherSection").classList.toggle("hidden", mode !== "teacher");
-      document.getElementById("examSection").classList.add("hidden");
+    function setLanguage(lang) {
+      document.getElementById("language").value = lang;
+      document.getElementById("introText").innerText = translations[lang].intro;
+      document.getElementById("heroTitle").innerText = translations[lang].heroTitle;
+      document.getElementById("heroText").innerText = translations[lang].heroText;
+    }
 
-      if (mode === "teacher") loadResults();
+    function hideAllMainSections() {
+      document.getElementById("studentSection").classList.add("hidden");
+      document.getElementById("teacherLoginSection").classList.add("hidden");
+      document.getElementById("teacherSection").classList.add("hidden");
+      document.getElementById("examSection").classList.add("hidden");
+    }
+
+    function showSection(mode) {
+      hideAllMainSections();
+
+      if (mode === "student") {
+        document.getElementById("studentSection").classList.remove("hidden");
+      }
+    }
+
+    function openTeacherLogin() {
+      hideAllMainSections();
+      document.getElementById("teacherLoginSection").classList.remove("hidden");
+      document.getElementById("teacherLoginSection").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function checkTeacherAccess() {
+      const enteredCode = document.getElementById("teacherPassword").value.trim();
+
+      if (enteredCode !== TEACHER_CODE) {
+        alert("Code professeure incorrect.");
+        return;
+      }
+
+      hideAllMainSections();
+      document.getElementById("teacherSection").classList.remove("hidden");
+      loadResults();
+      document.getElementById("teacherSection").scrollIntoView({ behavior: "smooth" });
+    }
+
+    function logoutTeacher() {
+      document.getElementById("teacherPassword").value = "";
+      hideAllMainSections();
+      document.getElementById("studentSection").classList.remove("hidden");
     }
 
     function startExam() {
       const studentId = document.getElementById("studentId").value.trim();
+      const studentPassword = document.getElementById("studentPassword").value.trim();
+      const currentCode = getStudentCode();
 
       if (!studentId) {
         alert("Merci d’indiquer un identifiant élève.");
+        return;
+      }
+
+      if (!studentPassword) {
+        alert("Merci d’indiquer le code d’accès élève.");
+        return;
+      }
+
+      if (studentPassword !== currentCode) {
+        alert("Code élève incorrect. Demande le bon code à la professeure.");
         return;
       }
 
@@ -542,25 +686,6 @@
       results.push(record);
       localStorage.setItem("aslFrenchResults", JSON.stringify(results));
 
-function setLanguage(lang) {
-  document.getElementById("language").value = lang;
-  document.getElementById("introText").innerText = translations[lang];
-
-  const messages = {
-    fr: "Langue d’aide activée : Français",
-    en: "Help language activated: English",
-    es: "Idioma de ayuda activado: Español"
-  };
-
-  alert(messages[lang]);
-}
-
-function showFirebaseInfo() {
-  alert(
-    "Préparation Firebase : cette future étape permettra à Stalina de voir les élèves connectés, les résultats en direct et les statistiques depuis son espace professeure."
-  );
-}
-
       loadResults();
     }
 
@@ -604,9 +729,38 @@ function showFirebaseInfo() {
       }
     }
 
+    function changeStudentCode() {
+      const newCode = document.getElementById("newStudentCode").value.trim();
+
+      if (!newCode) {
+        alert("Merci d’indiquer un nouveau code élève.");
+        return;
+      }
+
+      localStorage.setItem("aslStudentAccessCode", newCode);
+
+      const message = document.getElementById("codeMessage");
+      message.classList.remove("hidden");
+      message.innerHTML = `✅ Nouveau code élève enregistré : <strong>${newCode}</strong>`;
+
+      document.getElementById("newStudentCode").value = "";
+    }
+
+    function showCurrentStudentCode() {
+      const message = document.getElementById("codeMessage");
+      message.classList.remove("hidden");
+      message.innerHTML = `🔐 Code élève actuel : <strong>${getStudentCode()}</strong>`;
+    }
+
     function projectorMode() {
       document.body.style.zoom = "115%";
       alert("Mode projecteur activé. Pour revenir normal, recharge la page.");
+    }
+
+    function showFirebaseInfo() {
+      alert(
+        "Préparation Firebase : prochaine étape future. Elle permettra de connecter plusieurs élèves en même temps, suivre les résultats en direct et créer un tableau professeure connecté."
+      );
     }
 
     loadResults();
