@@ -308,11 +308,11 @@
         exercices visuels, mini-examens, scores, progression et futur suivi en direct pour Stalina.
       </p>
       <br>
-      <span class="tag">Français</span>
-      <span class="tag">English</span>
-      <span class="tag">Español</span>
-      <span class="tag">Mode projecteur</span>
-      <span class="tag">Préparation Firebase</span>
+     <button class="tag" onclick="setLanguage('fr')">🇫🇷 Français</button>
+<button class="tag" onclick="setLanguage('en')">🇬🇧 English</button>
+<button class="tag" onclick="setLanguage('es')">🇪🇸 Español</button>
+<button class="tag" onclick="projectorMode()">🖥️ Mode projecteur</button>
+<button class="tag" onclick="showFirebaseInfo()">☁️ Préparation Firebase</button>
     </section>
 
     <section id="studentSection" class="grid">
@@ -541,6 +541,25 @@
       let results = JSON.parse(localStorage.getItem("aslFrenchResults")) || [];
       results.push(record);
       localStorage.setItem("aslFrenchResults", JSON.stringify(results));
+
+function setLanguage(lang) {
+  document.getElementById("language").value = lang;
+  document.getElementById("introText").innerText = translations[lang];
+
+  const messages = {
+    fr: "Langue d’aide activée : Français",
+    en: "Help language activated: English",
+    es: "Idioma de ayuda activado: Español"
+  };
+
+  alert(messages[lang]);
+}
+
+function showFirebaseInfo() {
+  alert(
+    "Préparation Firebase : cette future étape permettra à Stalina de voir les élèves connectés, les résultats en direct et les statistiques depuis son espace professeure."
+  );
+}
 
       loadResults();
     }
